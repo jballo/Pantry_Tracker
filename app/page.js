@@ -3,208 +3,149 @@ import { useState, useEffect } from "react";
 import { Box, Modal, Stack, TextField, Typography, Button } from "@mui/material";
 import { firestore } from "@/firebase";
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc } from "firebase/firestore";
+import { Ranchers } from "next/font/google";
 
-const items = ['Tomato', 'granola', 'potato', 'Peanut Butter', 'Water Bottle', 'pepper', 'salt', 'Olive Oil'];
+
+const ranchers = Ranchers({
+    weight: '400',
+    style: 'normal',
+    subsets: ['latin']
+})
 
 export default function Home() {
-  const [pantry, setPantry] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [itemName, setItemName] = useState('');
 
-  const updateInventory = async () => {
-    const snapshot = query(collection(firestore, 'pantry'));
-    const docs = await getDocs(snapshot);
-    const pantryList = [];
-    docs.forEach((doc) => {
-      pantryList.push({
-        name: doc.id,
-        ...doc.data(),
-      });
-    });
-    setPantry(pantryList);
-  }
-
-  const addItem = async (item) => {
-    const docRef = doc(collection(firestore, 'pantry'), item);
-    const docSnap = await getDoc(docRef);
-
-    console.log(docSnap.data());
-
-    if( docSnap.exists() ){
-      const {quantity} = docSnap.data();
-      await setDoc(docRef, {quantity: quantity + 1});
-    } else {
-      await setDoc(docRef, {quantity: 1});
-    }
-
-    await updateInventory();
-  }
-
-  const removeItem = async (item) => {
-    const docRef = doc(collection(firestore, 'pantry'), item);
-    const docSnap = await getDoc(docRef);
-
-    console.log(docSnap.data());
-
-    if( docSnap.exists() ){
-      const {quantity} = docSnap.data();
-      if (quantity === 1) {
-        await deleteDoc(docRef);
-      } else {
-        await setDoc(docRef, {quantity: quantity - 1});
-      }
-    }
-
-    await updateInventory();
-  }
-
-  const handleOpen = () => setModalOpen(true);
-  const handleClose = () => setModalOpen(false);
-
-  useEffect(() => {
-    updateInventory();
-  },[]);
-
-  return <Box 
-    width="100vw" 
-    height="100vh" 
-    display={"flex"} 
-    flexDirection={"column"}
-    justifyContent={"center"} 
-    alignItems={'center'}
-    gap={2}
+  return <Box
+        width="100vw" 
+        height="100vh" 
+        display={"flex"} 
+        flexDirection={"column"}
+        justifyContent={"center"} 
+        alignItems={'center'}
+        gap={2}
+        sx={{
+        // backgroundImage: 'url("/DALLE.jpg")',
+        backgroundImage: 'url("/DALLEo.jpeg")',
+        backgroundSize: 'cover', // Adjusts the size of the background image
+        backgroundRepeat: 'no-repeat', // Prevents the background image from repeating
+        backgroundPosition: 'center', // Centers the background image
+    }}
     >
-      <Typography
-        variant="h1"
-      >Pantry Tracker</Typography>
-      <Modal
-        open={modalOpen}
-        onClose={handleClose}
-      >
         <Box
-          position={"absolute"}
-          top="50%"
-          left="50%"
-          width={400}
-          bgcolor={"#fff"}
-          border={"2px solid black"}
-          sx={{
-            transform: 'translate(-50%, -50%)',
-          }}
-          boxShadow={24}
-          p={4}
-          display={"flex"}
-          flexDirection={"column"}
-          gap={3}
+            width="100%"
+            height="12%"
+            bgcolor={"#E3E2DF"}
+            position={"absolute"}
+            top={0}
+            display={"flex"}
+            justifyContent={"flex-end"}
+            padding={3}
         >
-          <Typography>Add Item</Typography>
-          <Stack
-            width={"100%"}
-            direction={"row"}
-            spacing={2}
-          >
-            <TextField
-              variant="outlined"
-              fullWidth
-              value={itemName}
-              onChange={(e) => {
-                setItemName(e.target.value)
-              }}
-            />
+            {/* <Typography>Nav Bar</Typography> */}
             <Button
-              variant="outlined"
-              onClick={() => {
-                addItem(itemName);
-                setItemName('');
-                handleClose();
-              }}
-            >Add</Button>
-          </Stack>
+                variant="contained"
+                sx={{
+                    background: '#EE4C7C',
+                    '&:hover': {
+                        backgroundColor: '#9A1750'
+                    }
+                }}
+                // borderRadius={24}
+            >
+                Log In
+            </Button>
         </Box>
-      </Modal>
-      <Button
-        variant="contained"
-        onClick={handleOpen}
-      >Add New Item</Button>
-      <Box
-        border={"1px solid #333"}
-      >
         <Box
-        width="800px"
-        height="100px"
-        bgcolor={"#ADD8E6"}
-        display={"flex"}
-        justifyContent={"center"}
-        alignItems={"center"}
+            width={"55%"}
+            height={"100%"}
+            position={"absolute"}
+            left={0}
+            bgcolor={"#E3E2DF"}
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'space-between'}
+            alignContent={'center'}
+            padding={9}
+            sx={{
+                paddingRight: '4rem'
+            }}
         >
-          <Typography variant={"h2"} color={"#333"} textAlign={"center"}>
-            Pantry Items
-          </Typography>
-        </Box>
-        <Stack
-          width="800px"
-          height="200px"
-          spacing={2}
-          overflow={"auto"}
-        >
-          {pantry.map(({id, name, quantity}) => (
-            <Box
-              key={name}
-              width="100%"
-              height="300px"
-              display={"flex"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-              bgcolor={"#f0f0f0"}
-            > 
-              <Box
-                display={"flex"}
-                justifyContent={"space-between"}
-                width={"70%"}
-                // minWidth={"70%"}
-              >
+            <Typography
+                // fontFamily={ranchers}
+                variant="h1"
+                sx= {{
+                    fontFamily: ranchers.style.fontFamily
+                }}
+                color={"#5D001E"}
+                fontSize={110}
+            >
+                Pantry Tracker
+            </Typography>
+
+            <Stack
+                direction={'column'}
+                gap={3}
+            >
                 <Typography
-                  variant="h3"
-                  color="#333"
-                  textAlign={"center"}
+                    variant="h2"
+                    sx= {{
+                        fontFamily: ranchers.style.fontFamily
+                    }}
+                    color='#9A1750'
                 >
-                  {name.charAt(0).toUpperCase() + name.slice(1)}
+                    Track Less,
+                    <br/>
+                    Cook More
                 </Typography>
                 <Typography
-                  variant="h3"
-                  color="#333"
-                  textAlign={"center"}
                 >
-                  {quantity}
+                    Our app simplifies meal preparation by efficiently managing pantry inventory. Users can focus more on cooking and less on tracking ingredients, making mealtime more enjoyable and stress-free.
                 </Typography>
-              </Box>
                 <Stack
-                  spacing={3}
-                  padding={3}
-                  direction={"row"}
+                    direction={'row'}
+                    gap={1}
+                    width='100%'
+                    height='100%'
                 >
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      removeItem(name);
-                    }}
-                  >Remove</Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => {
-                      addItem(name);
-                    }}
-                  >Add</Button>
+                    
+                    <TextField
+                        // width='80%'
+                        fullWidth
+                        InputProps={{
+                            sx: {
+                                background: '#E3AFBC',
+                                boxSizing: 'border-box',
+                                borderRadius: '4px', // Ensure rounded corners
+                            }
+                        }}
+                        placeholder="Email Address"
+                        sx={{
+                            paddingRight: '20px'
+                        }}
+                    />
+                    <Box
+                        width={"30%"}
+                        height={"100%"}
+                    >
+                        <Button
+                            width='40%'
+                            fullWidth
+                            variant="contained"
+                            sx={{
+                                background: '#EE4C7C',
+                                minHeight: '100%',
+                                '&:hover': {
+                                    backgroundColor: '#9A1750'
+                                }
+                            }}
+                        >
+                            Get Started
+                        </Button>
+
+                    </Box>
                 </Stack>
-            </Box>
-          ))}
-          {/* {
-            pantry.forEach(({name, quantity}) => {
-              return <Box>name</Box>
-            })
-          } */}
-        </Stack>
-      </Box>
+
+            </Stack>
+        </Box>
     </Box>
     
 }
