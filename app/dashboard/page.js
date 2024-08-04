@@ -1,5 +1,9 @@
 'use client';
-import {useState, useEffect} from 'react';import { Box, Modal, Stack, TextField, Typography, Button, IconButton, Checkbox, Slider, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
+import {useState, useEffect} from 'react';
+import { Box, Modal, Stack, TextField, Typography, Button, IconButton, Checkbox, Slider, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
+
+import { useRouter } from 'next/navigation';
+
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import { firestore } from "@/firebase";
@@ -24,6 +28,7 @@ const ranchers = Ranchers({
 })
 
 export default function Page() {
+    const router = useRouter();
 
     const [pantry, setPantry] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
@@ -49,6 +54,10 @@ export default function Page() {
     const [categoryListFilters, setCategoryListFilters] = useState([]);
 
     var itemSearchField = '';
+
+    const handlePageChange = () => {
+        router.push('/');
+    };
     
 
     const handleChangePage = (event, newPage) => {
@@ -266,6 +275,9 @@ export default function Page() {
                     '&:hover': {
                         backgroundColor: '#9A1750'
                     }
+                }}
+                onClick={() => {
+                    handlePageChange();
                 }}
                 // borderRadius={24}
                 

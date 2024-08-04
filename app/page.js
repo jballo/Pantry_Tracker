@@ -5,6 +5,8 @@ import { firestore } from "@/firebase";
 import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc } from "firebase/firestore";
 import { Ranchers } from "next/font/google";
 
+import { useRouter } from 'next/navigation';
+
 
 const ranchers = Ranchers({
     weight: '400',
@@ -13,6 +15,12 @@ const ranchers = Ranchers({
 })
 
 export default function Home() {
+  const router = useRouter();
+
+  const handlePageChange = () => {
+    router.push('/dashboard');
+  };
+
 
   return <Box
         width="100vw" 
@@ -48,6 +56,9 @@ export default function Home() {
                     '&:hover': {
                         backgroundColor: '#9A1750'
                     }
+                }}
+                onClick={() => {
+                  handlePageChange();
                 }}
                 // borderRadius={24}
             >
@@ -136,6 +147,9 @@ export default function Home() {
                                 '&:hover': {
                                     backgroundColor: '#9A1750'
                                 }
+                            }}
+                            onClick={() => {
+                              handlePageChange();
                             }}
                         >
                             Get Started
