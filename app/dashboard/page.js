@@ -1,9 +1,10 @@
 'use client';
 import {useState, useEffect} from 'react';
-import { Box, Modal, Stack, TextField, Typography, Button, IconButton, Checkbox, Slider, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel } from "@mui/material";
+import { Box, Modal, Stack, TextField, Typography, Button, IconButton, Checkbox, Slider, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Menu, MenuItem, LinearProgress } from "@mui/material";
 
 import { useRouter } from 'next/navigation';
 
+// import LinearProgress from '@mui/material/LinearProgress';
 import SearchIcon from '@mui/icons-material/Search';
 import MenuIcon from '@mui/icons-material/Menu';
 import { firestore } from "@/firebase";
@@ -20,7 +21,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 
 
 const ranchers = Ranchers({
@@ -32,15 +33,47 @@ const ranchers = Ranchers({
 export default function Page() {
     const router = useRouter();
     const { isLoaded, isSignedIn, user } = useUser();
+    const { signOut } = useClerk();
+
 
 
     // In case the user signs out while on the page.
-    if (!isLoaded || !isSignedIn) {
+    if (!isLoaded) {
+        // router.push('/');
+        // return null;
+        // router.push('/sign-in');
+        return (<Box
+            display='flex'
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+            width='100vw'
+            height='100vh'
+            bgcolor='#E3E2DF'
+        >
+            <Typography
+                variant='h2'
+                 sx= {{
+                        fontFamily: ranchers.style.fontFamily
+                    }}
+                color='#9A1750'
+            >Loading...</Typography>
+        </Box>);
+    }
+    if (!isSignedIn){
         router.push('/');
     }
 
 
-    
+    const [anchorEl, setAnchorEl] = useState(null);
+    const open = Boolean(anchorEl);
+    const handleDropDownClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleDropDownClose = () => {
+        setAnchorEl(null);
+    };
+
 
     const [pantry, setPantry] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
@@ -104,7 +137,7 @@ export default function Page() {
 
     const createUser = async () => {
         const collectionRef = collection(firestore, 'users');
-        const docRef = doc(collectionRef, user.id);
+        const docRef = doc(collectionRef, user?.id);
         const docSnap = await getDoc(docRef);
 
         if(docSnap.exists()){
@@ -268,9 +301,12 @@ export default function Page() {
     }, [categoryListFilters])
 
     useEffect(() => {
-        updateInventory();
-        createUser();
-    },[]);
+        if(isSignedIn){
+            createUser();
+            updateInventory();
+        }
+        
+    },[isSignedIn]);
 
     return <Box
         width='100vw'
@@ -295,10 +331,13 @@ export default function Page() {
                     }}
                 color='#9A1750'
             >
-                Welcome, {user.firstName}
+                Welcome, { user?.firstName}
             </Typography>
             <Button
-                variant="contained"
+                aria-controls={open ? 'positioned-menu' : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? 'true' : undefined}
+                onClick={handleDropDownClick}
                 sx={{
                     background: '#EE4C7C',
                     height: '50%',
@@ -306,14 +345,39 @@ export default function Page() {
                         backgroundColor: '#9A1750'
                     }
                 }}
-                onClick={() => {
-                    handlePageChange();
-                }}
-                // borderRadius={24}
-                
+                variant='contained'
             >
                 <MenuIcon/>
             </Button>
+            <Menu
+                id="demo-positioned-menu"
+                aria-labelledby="demo-positioned-button"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleDropDownClose}
+                anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+                }}
+                transformOrigin={{
+                vertical: 'top',
+                horizontal: 'left',
+                }}
+            >   
+                <MenuItem 
+                    onClick={() => {
+                        handleDropDownClose();
+                        router.push('/');
+                    }}
+                >Home</MenuItem>
+                <MenuItem onClick={handleDropDownClose}>Profile</MenuItem>
+                <MenuItem onClick={handleDropDownClose}>My account</MenuItem>
+                <MenuItem onClick={() => {
+                    handleDropDownClose();
+                    signOut();
+                    // router.push('/');
+                }}>Logout</MenuItem>
+            </Menu>
         </Stack>
         <Stack
             direction='row'
