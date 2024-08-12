@@ -306,7 +306,7 @@ export default function Page() {
             updateInventory();
         }
         
-    },[isSignedIn]);
+    },[]);
 
     return <Box
         width='100vw'
