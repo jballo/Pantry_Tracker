@@ -34,6 +34,8 @@ export default function Page() {
     const router = useRouter();
     const { isLoaded, isSignedIn, user } = useUser();
     const { signOut } = useClerk();
+    const [loading, setLoading] = useState(true);
+
 
 
     const [anchorEl, setAnchorEl] = useState(null);
@@ -96,6 +98,18 @@ export default function Page() {
         });
         setPantry(pantryList);
     }, [isSignedIn]);
+
+
+    useEffect(() => {
+        if (isLoaded) {
+        if (!isSignedIn) {
+            router.push('/');
+        } else {
+            setLoading(false);
+        }
+        }
+    }, [isLoaded, isSignedIn, router]);
+
     var itemSearchField = '';
 
     const handlePageChange = () => {
@@ -270,12 +284,9 @@ export default function Page() {
         
         
 
-        // In case the user signs out while on the page.
-        if (!isLoaded) {
-            // router.push('/');
-            // return null;
-            // router.push('/sign-in');
-            return (<Box
+        if (loading) {
+            return (
+            <Box
                 display='flex'
                 flexDirection='column'
                 justifyContent='center'
@@ -286,16 +297,17 @@ export default function Page() {
             >
                 <Typography
                     variant='h2'
-                     sx= {{
-                            fontFamily: ranchers.style.fontFamily
-                        }}
+                    sx= {{
+                        fontFamily: ranchers.style.fontFamily
+                    }}
                     color='#9A1750'
-                >Loading...</Typography>
-            </Box>);
+                    >
+                Loading...
+                </Typography>
+            </Box>
+            );
         }
-        if (!isSignedIn){
-            router.push('/');
-        }
+
         
         // useEffect(() => {
             //     if(isSignedIn){
