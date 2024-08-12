@@ -22,10 +22,18 @@ export default function Home() {
 
   const handlePageChange = () => {
     if(!isSignedIn){
-
-        router.push('/sign-in');
+        try{
+            router.push('/sign-in');
+        } catch(e){
+            console.log(e);
+        }
     } else {
-        router.push('/dashboard');
+        try{
+
+            router.push('/dashboard');
+        } catch(e){
+            console.log(e);
+        }
     }
   };
 

@@ -381,7 +381,11 @@ export default function Page() {
                 <MenuItem 
                     onClick={() => {
                         handleDropDownClose();
-                        router.push('/');
+                        try {
+                            router.push('/');
+                        } catch (error) {
+                            console.error("Navigation error: ", error);
+                        }
                     }}
                 >Home</MenuItem>
                 <MenuItem onClick={handleDropDownClose}>Profile</MenuItem>
