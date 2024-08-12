@@ -1,5 +1,5 @@
 'use client';
-import {useState, useEffect} from 'react';
+import {useState, useEffect, useCallback} from 'react';
 import { Box, Modal, Stack, TextField, Typography, Button, IconButton, Checkbox, Slider, Radio, RadioGroup, FormControlLabel, FormControl, FormLabel, Menu, MenuItem, LinearProgress } from "@mui/material";
 
 import { useRouter } from 'next/navigation';
@@ -36,35 +36,6 @@ export default function Page() {
     const { signOut } = useClerk();
 
 
-
-    // In case the user signs out while on the page.
-    if (!isLoaded) {
-        // router.push('/');
-        // return null;
-        // router.push('/sign-in');
-        return (<Box
-            display='flex'
-            flexDirection='column'
-            justifyContent='center'
-            alignItems='center'
-            width='100vw'
-            height='100vh'
-            bgcolor='#E3E2DF'
-        >
-            <Typography
-                variant='h2'
-                 sx= {{
-                        fontFamily: ranchers.style.fontFamily
-                    }}
-                color='#9A1750'
-            >Loading...</Typography>
-        </Box>);
-    }
-    if (!isSignedIn){
-        router.push('/');
-    }
-
-
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     const handleDropDownClick = (event) => {
@@ -94,23 +65,56 @@ export default function Page() {
 
     const [categoryListFilters, setCategoryListFilters] = useState([]);
 
+    const createUser = useCallback(async () => {
+        const collectionRef = collection(firestore, 'users');
+        const docRef = doc(collectionRef, user?.id);
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()){
+            console.log("User already exists in db: " + docSnap);
+        } else {
+            console.log("User does not exist in db. Creating a new user in db.");
+            await setDoc(docRef, {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                userImage: user.imageUrl,
+            })
+        }
+    }, [isSignedIn]);
+
+
+
+    const updateInventory = useCallback(async () => {
+        const snapshot = query(collection(firestore, 'pantry'));
+        const docs = await getDocs(snapshot);
+        const pantryList = [];
+        docs.forEach((doc) => {
+            pantryList.push({
+                name: doc.id,
+                ...doc.data(),
+            });
+        });
+        setPantry(pantryList);
+    }, [isSignedIn]);
     var itemSearchField = '';
 
     const handlePageChange = () => {
         router.push('/');
     };
-    
 
+
+    
+    
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
-
-     const handleChangeRowsPerPage = (event) => {
+    
+    const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
     
-
+    
     const columns = [
         { id: 'name', label: 'Name', minWidth: 170 },
         {
@@ -134,44 +138,13 @@ export default function Page() {
             minWidth: 50,
         },
     ];
-
-    const createUser = async () => {
-        const collectionRef = collection(firestore, 'users');
-        const docRef = doc(collectionRef, user?.id);
-        const docSnap = await getDoc(docRef);
-
-        if(docSnap.exists()){
-            console.log("User already exists in db: " + docSnap);
-        } else {
-            console.log("User does not exist in db. Creating a new user in db.");
-            await setDoc(docRef, {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                userImage: user.imageUrl,
-            })
-        }
-    }
-
-
-
-    const updateInventory = async () => {
-        const snapshot = query(collection(firestore, 'pantry'));
-        const docs = await getDocs(snapshot);
-        const pantryList = [];
-        docs.forEach((doc) => {
-            pantryList.push({
-                name: doc.id,
-                ...doc.data(),
-            });
-        });
-        setPantry(pantryList);
-    }
-
+    
+    
     const addItem = async (item) => {
         const docRef = doc(collection(firestore, 'pantry'), item);
         const docSnap = await getDoc(docRef);
-
-
+        
+        
         if( docSnap.exists() ){
             const {quantity, category} = docSnap.data();
             const newData = {
@@ -190,42 +163,42 @@ export default function Page() {
                 console.log("itemQuantity not number")
             }
         }
-
-        await updateInventory();
+        
+        // await updateInventory();
     }
-
+    
     const removeItem = async (item) => {
         const docRef = doc(collection(firestore, 'pantry'), item);
         const docSnap = await getDoc(docRef);
-
-
+        
+        
         if( docSnap.exists() ){
-        const {quantity, category} = docSnap.data();
-        if (quantity === 1) {
-            await deleteDoc(docRef);
-        } else {
-            await setDoc(docRef, {
-                quantity: quantity - 1,
-                category: category,
-            });
+            const {quantity, category} = docSnap.data();
+            if (quantity === 1) {
+                await deleteDoc(docRef);
+            } else {
+                await setDoc(docRef, {
+                    quantity: quantity - 1,
+                    category: category,
+                });
+            }
         }
-        }
-
+        
         await updateInventory();
     }
-
+    
     const handleOpen = () => setModalOpen(true);
     const handleClose = () => setModalOpen(false);
-
+    
     const filterHandleOpen = () => setFilterModelOpen(true);
     const filterHandleClose = () => setFilterModelOpen(false);
-
+    
     const handleSortByHandleOpen = () => setSortByModalOpen(true);
     const handleSortByHandleClose = () => setSortByModalOpen(false);
-
+    
     const handleQuantityChange = (event, newValue) => setMinMaxQuantity(newValue);
     const handleCaloriesChange = (event, newValue) => setMinMaxCalories(newValue);
-
+    
     const setNameOrder = () => {
         const newPantryAsc = pantry.sort((a,b) => a.name.localeCompare(b.name));
         
@@ -239,14 +212,14 @@ export default function Page() {
             });
             
         }
-
+        
         setPantry(newPantryObj);
     }
-
+    
     useEffect(() => {
         var min = null;
         var max = null;
-
+        
         pantry.map((pantryItem) => {
             if(min == null || max == null){
                 min = pantryItem.quantity;
@@ -256,13 +229,13 @@ export default function Page() {
                 max = Math.max(max, pantryItem.quantity);
             }
         })
-
+        
         setMinMaxQuantity([min, max]);
-    }, [pantry]);
-
+    }, [pantry, isSignedIn]);
+    
     const handleCategoryFilterChange = (categoryName) => {
         const filters = categoryListFilters;
-
+        
         if(filters.includes(categoryName)){
             const newFilters = filters.filter(function(e) {
                 return e !== categoryName;
@@ -271,52 +244,76 @@ export default function Page() {
         } else {
             const newFilters = [...filters, categoryName];
             setCategoryListFilters(newFilters);
-
+            
         }
     }
-
+    
     useEffect(() => {
         var newCategoryListSet = new Set([]);
-
+        
         pantry.map((pantryItem) => {
             if(!newCategoryListSet.has(pantryItem.category)){
                 newCategoryListSet.add(pantryItem.category);
             }
         })
-
-
+        
+        
         const newCategoryList = Array.from(newCategoryListSet);
         // for(const item in newCategoryListSet.keys()){
-        //     console.log('for loop: ' + item);
-        //     newCategoryList.push(item);
-        // }
-        // console.log();
+            //     console.log('for loop: ' + item);
+            //     newCategoryList.push(item);
+            // }
+            // console.log();
+            
+            setCategoryList(newCategoryList);
+        },[pantry])
+        
+        
 
-        setCategoryList(newCategoryList);
-    },[pantry])
-
-
-    useEffect(() => {
-        console.log('categoryListFilters: ' + categoryListFilters);
-    }, [categoryListFilters])
-
-    useEffect(() => {
-        if(isSignedIn){
-            createUser();
-            updateInventory();
+        // In case the user signs out while on the page.
+        if (!isLoaded) {
+            // router.push('/');
+            // return null;
+            // router.push('/sign-in');
+            return (<Box
+                display='flex'
+                flexDirection='column'
+                justifyContent='center'
+                alignItems='center'
+                width='100vw'
+                height='100vh'
+                bgcolor='#E3E2DF'
+            >
+                <Typography
+                    variant='h2'
+                     sx= {{
+                            fontFamily: ranchers.style.fontFamily
+                        }}
+                    color='#9A1750'
+                >Loading...</Typography>
+            </Box>);
+        }
+        if (!isSignedIn){
+            router.push('/');
         }
         
-    },[createUser, isSignedIn]);
-
+        // useEffect(() => {
+            //     if(isSignedIn){
+                //         createUser();
+                //         updateInventory();
+                //     }
+                
+                // },[createUser, isSignedIn]);
+                
     return <Box
-        width='100vw'
-        height='100vh'
-        bgcolor='#E3E2DF'
-        display='flex'
-        flexDirection='column'
-        padding={10}
-        gap={4}
-    >
+                width='100vw'
+                height='100vh'
+                bgcolor='#E3E2DF'
+                display='flex'
+                flexDirection='column'
+                padding={10}
+                gap={4}
+                >
         <Stack
             width='100%'
             height='20%'

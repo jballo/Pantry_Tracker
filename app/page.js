@@ -6,6 +6,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc } from "fire
 import { Ranchers } from "next/font/google";
 
 import { useRouter } from 'next/navigation';
+import { useUser } from "@clerk/nextjs";
 
 
 const ranchers = Ranchers({
@@ -15,10 +16,17 @@ const ranchers = Ranchers({
 })
 
 export default function Home() {
+    
+  const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
 
   const handlePageChange = () => {
-    router.push('/sign-in');
+    if(!isSignedIn){
+
+        router.push('/sign-in');
+    } else {
+        router.push('/dashboard');
+    }
   };
 
 
