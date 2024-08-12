@@ -63,10 +63,23 @@ export default function Page() {
 
     const [categoryList, setCategoryList] = useState([]);
     const [itemSearchName, setItemSearchName] = useState('');
-
-
+    
+    
     const [categoryListFilters, setCategoryListFilters] = useState([]);
-
+    useEffect(() => {
+        if (isLoaded) {
+            if (!isSignedIn) {
+                try {
+                    router.push('/');
+                } catch (error) {
+                    console.error("Navigation error: ", error);
+                }
+            } else {
+                setLoading(false);
+            }
+        }
+    }, [isLoaded, isSignedIn, router]);
+    
     const createUser = useCallback(async () => {
         try{
             const collectionRef = collection(firestore, 'users');
@@ -90,15 +103,6 @@ export default function Page() {
     }, [isSignedIn]);
 
 
-    useEffect(() => {
-        if (isLoaded) {
-            if (!isSignedIn) {
-                router.push('/');
-            } else {
-                setLoading(false);
-            }
-        }
-    }, [isLoaded, isSignedIn, router]);
 
     const updateInventory = useCallback(async () => {
         try{
