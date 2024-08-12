@@ -37,11 +37,7 @@ export default function Page() {
     const [itemName, setItemName] = useState('');
     const [itemCategory, setItemCategory] = useState('');
     const [itemQuantity, setItemQuantity] = useState(0);
-    // const [minQuantity, setMinQuantity] = useState(0);
-    // const [maxQuantity, setMaxQuantity] = useState(100);
     const [minMaxQuantity, setMinMaxQuantity] = useState([0, 100]);
-    // const [minCalories, setMinCalories] = useState(0);
-    // const [maxCalories, setMaxCalories] = useState(100);
     const [minMaxCalories, setMinMaxCalories] = useState([0, 1000]);
 
     const [page, setPage] = useState(0);
@@ -548,10 +544,6 @@ export default function Page() {
                     }}
                     label='Search by Name...'
                     onChange={(e) => {
-                        // setItemSearchName(e.target.value);
-                        // console.log("search button pressed");
-                        // console.log("e.target.value : " + e.target.value);
-                        // itemSearchField = e.target.value;
                         setItemSearchName(e.target.value);
                     }}
                 />
