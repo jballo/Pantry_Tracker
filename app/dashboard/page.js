@@ -68,19 +68,24 @@ export default function Page() {
     const [categoryListFilters, setCategoryListFilters] = useState([]);
 
     const createUser = useCallback(async () => {
-        const collectionRef = collection(firestore, 'users');
-        const docRef = doc(collectionRef, user?.id);
-        const docSnap = await getDoc(docRef);
+        try{
+            const collectionRef = collection(firestore, 'users');
+            const docRef = doc(collectionRef, user?.id);
+            const docSnap = await getDoc(docRef);
+    
+            if(docSnap.exists()){
+                console.log("User already exists in db: " + docSnap);
+            } else {
+                console.log("User does not exist in db. Creating a new user in db.");
+                await setDoc(docRef, {
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    userImage: user.imageUrl,
+                })
+            }
 
-        if(docSnap.exists()){
-            console.log("User already exists in db: " + docSnap);
-        } else {
-            console.log("User does not exist in db. Creating a new user in db.");
-            await setDoc(docRef, {
-                firstName: user.firstName,
-                lastName: user.lastName,
-                userImage: user.imageUrl,
-            })
+        } catch (error) {
+            console.error("Error adding user to db: " + error.message);
         }
     }, [isSignedIn]);
 
@@ -96,26 +101,22 @@ export default function Page() {
     }, [isLoaded, isSignedIn, router]);
 
     const updateInventory = useCallback(async () => {
-        const snapshot = query(collection(firestore, 'pantry'));
-        const docs = await getDocs(snapshot);
-        const pantryList = [];
-        docs.forEach((doc) => {
-            pantryList.push({
-                name: doc.id,
-                ...doc.data(),
+        try{
+            const snapshot = query(collection(firestore, 'pantry'));
+            const docs = await getDocs(snapshot);
+            const pantryList = [];
+            docs.forEach((doc) => {
+                pantryList.push({
+                    name: doc.id,
+                    ...doc.data(),
+                });
             });
-        });
-        setPantry(pantryList);
+            setPantry(pantryList);
+
+        } catch (error) {
+            console.error("Error fetching pantry data: ", error.message);
+        }
     }, [isSignedIn]);
-
-
-
-    var itemSearchField = '';
-
-    const handlePageChange = () => {
-        router.push('/');
-    };
-
 
     
     
