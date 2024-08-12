@@ -20,6 +20,7 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
+import { useUser } from "@clerk/nextjs";
 
 
 const ranchers = Ranchers({
@@ -30,6 +31,16 @@ const ranchers = Ranchers({
 
 export default function Page() {
     const router = useRouter();
+    const { isLoaded, isSignedIn, user } = useUser();
+
+
+    // In case the user signs out while on the page.
+    if (!isLoaded || !isSignedIn) {
+        router.push('/');
+    }
+
+
+    
 
     const [pantry, setPantry] = useState([]);
     const [modalOpen, setModalOpen] = useState(false);
@@ -91,6 +102,22 @@ export default function Page() {
         },
     ];
 
+    const createUser = async () => {
+        const collectionRef = collection(firestore, 'users');
+        const docRef = doc(collectionRef, user.id);
+        const docSnap = await getDoc(docRef);
+
+        if(docSnap.exists()){
+            console.log("User already exists in db: " + docSnap);
+        } else {
+            console.log("User does not exist in db. Creating a new user in db.");
+            await setDoc(docRef, {
+                firstName: user.firstName,
+                lastName: user.lastName,
+                userImage: user.imageUrl,
+            })
+        }
+    }
 
 
 
@@ -242,6 +269,7 @@ export default function Page() {
 
     useEffect(() => {
         updateInventory();
+        createUser();
     },[]);
 
     return <Box
@@ -267,7 +295,7 @@ export default function Page() {
                     }}
                 color='#9A1750'
             >
-                Welcome
+                Welcome, {user.firstName}
             </Typography>
             <Button
                 variant="contained"

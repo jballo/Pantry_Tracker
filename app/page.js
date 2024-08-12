@@ -18,7 +18,7 @@ export default function Home() {
   const router = useRouter();
 
   const handlePageChange = () => {
-    router.push('/dashboard');
+    router.push('/sign-in');
   };
 
 
