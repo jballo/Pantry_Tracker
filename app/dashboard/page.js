@@ -85,6 +85,15 @@ export default function Page() {
     }, [isSignedIn]);
 
 
+    useEffect(() => {
+        if (isLoaded) {
+            if (!isSignedIn) {
+                router.push('/');
+            } else {
+                setLoading(false);
+            }
+        }
+    }, [isLoaded, isSignedIn, router]);
 
     const updateInventory = useCallback(async () => {
         const snapshot = query(collection(firestore, 'pantry'));
@@ -100,15 +109,6 @@ export default function Page() {
     }, [isSignedIn]);
 
 
-    useEffect(() => {
-        if (isLoaded) {
-        if (!isSignedIn) {
-            router.push('/');
-        } else {
-            setLoading(false);
-        }
-        }
-    }, [isLoaded, isSignedIn, router]);
 
     var itemSearchField = '';
 
