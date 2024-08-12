@@ -21,6 +21,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
 
+
 const ranchers = Ranchers({
     weight: '400',
     style: 'normal',
@@ -119,10 +120,15 @@ export default function Page() {
             }
             await setDoc(docRef, newData);
         } else {
-            await setDoc(docRef, {
-                quantity: itemQuantity,
-                category: itemCategory,
-            });
+            if(!(isNaN(itemQuantity)) && itemQuantity !== ''){
+                console.log("passed as a number");
+                await setDoc(docRef, {
+                    quantity: parseInt(itemQuantity),
+                    category: itemCategory,
+                });
+            } else {
+                console.log("itemQuantity not number")
+            }
         }
 
         await updateInventory();
@@ -343,6 +349,7 @@ export default function Page() {
                         Quantity:
                     </Typography>
                     <TextField
+                        type="number"
                         variant='outlined'
                         fullWidth
                         value={itemQuantity}
@@ -350,7 +357,6 @@ export default function Page() {
                             setItemQuantity(e.target.value);
                         }}
                     />
-
                     <Button
                         variant="contained"
                         sx = {{
