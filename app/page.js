@@ -6,7 +6,8 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc } from "fire
 import { Ranchers } from "next/font/google";
 
 import { useRouter } from 'next/navigation';
-import { useUser } from "@clerk/nextjs";
+import { SignedIn, useUser } from "@clerk/nextjs";
+import { SignIn, SignInButton, SignedOut, SignOutButton, SignUpButton } from "@clerk/clerk-react";
 
 
 const ranchers = Ranchers({
@@ -20,22 +21,6 @@ export default function Home() {
   const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
 
-  const handlePageChange = () => {
-    if(!isSignedIn){
-        try{
-            router.push('/sign-in');
-        } catch(e){
-            console.log(e);
-        }
-    } else {
-        try{
-
-            router.push('/dashboard');
-        } catch(e){
-            console.log(e);
-        }
-    }
-  };
 
 
   return <Box
@@ -64,22 +49,31 @@ export default function Home() {
             justifyContent={"flex-end"}
             padding={3}
         >
-            {/* <Typography>Nav Bar</Typography> */}
-            <Button
-                variant="contained"
-                sx={{
-                    background: '#EE4C7C',
-                    '&:hover': {
-                        backgroundColor: '#9A1750'
-                    }
-                }}
-                onClick={() => {
-                  handlePageChange();
-                }}
-                // borderRadius={24}
-            >
-                Log In
-            </Button>
+            <SignedOut>
+                <SignInButton>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            background: '#EE4C7C',
+                            '&:hover': {
+                                backgroundColor: '#9A1750'
+                            }
+                        }}
+                    >Sign In</Button>
+                </SignInButton>
+            </SignedOut>
+            <SignedIn>
+                {/* redirect to /dashboard */}
+                <Button href="/dashboard"
+                    variant="contained"
+                    sx={{
+                        background: '#EE4C7C',
+                        '&:hover': {
+                            backgroundColor: '#9A1750'
+                        }
+                    }}
+                >Proceed</Button>
+            </SignedIn>
         </Box>
         <Box
             width={"55%"}
@@ -133,45 +127,44 @@ export default function Home() {
                     width='100%'
                     height='100%'
                 >
-                    
-                    <TextField
-                        // width='80%'
-                        fullWidth
-                        InputProps={{
-                            sx: {
-                                background: '#E3AFBC',
-                                boxSizing: 'border-box',
-                                borderRadius: '4px', // Ensure rounded corners
-                            }
-                        }}
-                        placeholder="Email Address"
-                        sx={{
-                            paddingRight: '20px'
-                        }}
-                    />
-                    <Box
-                        width={"30%"}
-                        height={"100%"}
-                    >
-                        <Button
-                            width='40%'
+                    <SignedOut>
+
+                        <TextField
+                            // width='80%'
                             fullWidth
-                            variant="contained"
-                            sx={{
-                                background: '#EE4C7C',
-                                minHeight: '100%',
-                                '&:hover': {
-                                    backgroundColor: '#9A1750'
+                            InputProps={{
+                                sx: {
+                                    background: '#E3AFBC',
+                                    boxSizing: 'border-box',
+                                    borderRadius: '4px', // Ensure rounded corners
                                 }
                             }}
-                            onClick={() => {
-                              handlePageChange();
+                            placeholder="Email Address"
+                            sx={{
+                                paddingRight: '20px'
                             }}
+                        />
+                        <Box
+                            width={"30%"}
+                            height={"100%"}
                         >
-                            Get Started
-                        </Button>
-
-                    </Box>
+                            <SignUpButton>
+                                <Button
+                                    width='40%'
+                                    fullWidth
+                                    variant="contained"
+                                    sx={{
+                                        background: '#EE4C7C',
+                                        minHeight: '100%',
+                                        '&:hover': {
+                                            backgroundColor: '#9A1750'
+                                        }
+                                    }}
+                                >Get Started</Button>
+                            </SignUpButton>
+                        </Box>
+                    </SignedOut>
+                    
                 </Stack>
 
             </Stack>
