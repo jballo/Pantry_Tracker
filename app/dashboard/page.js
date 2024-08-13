@@ -74,7 +74,8 @@ export default function Page() {
             const docSnap = await getDoc(docRef);
     
             if(docSnap.exists()){
-                console.log("User already exists in db: " + docSnap);
+                // console.log("User already exists in db: " + docSnap);
+                console.log("User already exists in db.");
             } else {
                 console.log("User does not exist in db. Creating a new user in db.");
                 await setDoc(docRef, {
