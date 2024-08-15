@@ -776,6 +776,7 @@ export default function Page() {
                                                             <TableCell key={column.id} align={column.align}>
                                                                 <Stack
                                                                     direction='row'
+                                                                    justifyContent='flex-end'
                                                                 >
                                                                     <Button
                                                                         variant="contained"
@@ -786,7 +787,7 @@ export default function Page() {
                                                                             }
                                                                         }}
                                                                         onClick={() => {
-                                                                            addItem(value);
+                                                                            addItem(row.name);
                                                                         }}
                                                                         
                                                                     >+</Button>
@@ -799,7 +800,7 @@ export default function Page() {
                                                                             }
                                                                         }}
                                                                         onClick={() => {
-                                                                            removeItem(value);
+                                                                            removeItem(row.name);
                                                                         }}
                                                                     >-</Button>
             
