@@ -173,7 +173,7 @@ export default function Page() {
             // format: (value) => value.toFixed(2),
         },
         {
-            id: 'name',
+            id: 'update',
             label: 'Update',
             align: 'right',
             minWidth: 50,
@@ -764,10 +764,10 @@ export default function Page() {
                             <TableBody>
                                 {pantry
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row) => {
+                                .map((row, index) => {
                                     if((itemSearchName === '' || row.name.includes(itemSearchName)) && (categoryListFilters.length === 0 || categoryListFilters.includes(row.category)) && (row.quantity >= minMaxQuantity[0] && row.quantity <= minMaxQuantity[1] )){
                                         return (
-                                            <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                                            <TableRow hover role="checkbox" tabIndex={-1} key={index}>
                                                 {columns.map((column) => {
                                                     const value = row[column.id];
                                                     if (column.label === 'Update'){
