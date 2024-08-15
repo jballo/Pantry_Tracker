@@ -60,12 +60,17 @@ export default function Page() {
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
+    
     const [categoryList, setCategoryList] = useState([]);
     const [itemSearchName, setItemSearchName] = useState('');
     
     
     const [categoryListFilters, setCategoryListFilters] = useState([]);
+    
+    const handleSignOut = async () => {
+        await signOut({redirectTo: '/'});
+        // router.push('/');
+    };
 
     const createUser = async () => {
         try{
@@ -312,7 +317,6 @@ export default function Page() {
             setCategoryList(newCategoryList);
     },[pantry])
         
-        
 
         // if (loading) {
         //     return (
@@ -426,10 +430,7 @@ export default function Page() {
                                         backgroundColor: '#9A1750'
                                     }
                                 }}
-                                onClick={() => {
-                                    router.push('/');
-                                    signOut();
-                                }}
+                                onClick={handleSignOut}
                              >
                                 Sign Out
                             </Button>
