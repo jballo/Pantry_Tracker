@@ -60,26 +60,17 @@ export default function Page() {
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
+    
     const [categoryList, setCategoryList] = useState([]);
     const [itemSearchName, setItemSearchName] = useState('');
     
     
     const [categoryListFilters, setCategoryListFilters] = useState([]);
-    // useEffect(() => {
-    //     if (isLoaded) {
-    //         if (!isSignedIn) {
-    //             try {
-    //                 router.push('/');
-    //             } catch (error) {
-    //                 console.error("Navigation error: ", error);
-    //             }
-    //         } else {
-    //             setLoading(false);
-    //         }
-    //     }
-    // }, [isLoaded, isSignedIn, router]);
     
+    const handleSignOut = async () => {
+        await signOut({redirectTo: '/'});
+        // router.push('/');
+    };
     const createUser = useCallback(async () => {
         try{
             const collectionRef = collection(firestore, 'users');
@@ -287,7 +278,6 @@ export default function Page() {
             setCategoryList(newCategoryList);
         },[pantry])
         
-        
 
         // if (loading) {
         //     return (
@@ -401,10 +391,7 @@ export default function Page() {
                                         backgroundColor: '#9A1750'
                                     }
                                 }}
-                                onClick={() => {
-                                    router.push('/');
-                                    signOut();
-                                }}
+                                onClick={handleSignOut}
                              >
                                 Sign Out
                             </Button>
