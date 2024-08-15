@@ -99,7 +99,7 @@ export default function Home() {
                 color={"#5D001E"}
                 fontSize={110}
             >
-                Pantry Tracker
+                PantryGrove
             </Typography>
 
             <Stack
