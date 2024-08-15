@@ -367,7 +367,10 @@ export default function Page() {
                     height='20%'
                     direction='row'
                     display='flex'
-                    justifyContent='space-between'
+                    sx={{
+                        justifyContent:'space-between'
+
+                    }}
                 >
                     <Typography
                         variant='h2'
@@ -439,7 +442,10 @@ export default function Page() {
                 </Stack>
                 <Stack
                     direction='row'
-                    justifyContent='space-between'
+                    sx={{
+
+                        justifyContent:'space-between'
+                    }}
                     width='100%'
                     height='30%'
                 >
@@ -562,7 +568,8 @@ export default function Page() {
                                 padding={3}
                                 borderRadius={5}
                             >
-                                <FormControl>
+                                <Typography>Sort By Coming Soon...</Typography>
+                                {/* <FormControl>
                                     <FormLabel id="demo-radio-buttons-group-label" >Sort By</FormLabel>
                                 <RadioGroup
                                     aria-labelledby="demo-radio-buttons-group-label"
@@ -596,7 +603,7 @@ export default function Page() {
                                     </Stack>
                                 </RadioGroup>
 
-                                </FormControl>
+                                </FormControl> */}
 
                             </Box>
 
@@ -705,7 +712,10 @@ export default function Page() {
                         />
                         <Box
                             display='flex'
-                            justifyContent='center'
+                            sx={{
+
+                                justifyContent:'center'
+                            }}
                             alignItems='start'
                             padding={2}
                         >
@@ -714,8 +724,8 @@ export default function Page() {
                                 sx={{
                                     color: '#5D001E',
                                     
+                                    justifyContent:'center'
                                 }}
-                                justifyContent='center'
                                 
                             />
 
