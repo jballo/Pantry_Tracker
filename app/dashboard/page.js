@@ -71,14 +71,16 @@ export default function Page() {
         await signOut({redirectTo: '/'});
         // router.push('/');
     };
-    const createUser = useCallback(async () => {
+
+    const createUser = async () => {
         try{
             const collectionRef = collection(firestore, 'users');
             const docRef = doc(collectionRef, user?.id);
             const docSnap = await getDoc(docRef);
     
             if(docSnap.exists()){
-                console.log("User already exists in db: " + docSnap);
+                // console.log("User already exists in db: " + docSnap);
+                console.log("User already exists in db.");
             } else {
                 console.log("User does not exist in db. Creating a new user in db.");
                 await setDoc(docRef, {
@@ -91,19 +93,21 @@ export default function Page() {
         } catch (error) {
             console.error("Error adding user to db: " + error.message);
         }
-    }, [isSignedIn]);
+    }
 
-
-
-    const updateInventory = useCallback(async () => {
+    const updateInventory = async () => {
+        console.log("updateInventory called");
         try{
-            const snapshot = query(collection(firestore, 'pantry'));
-            const docs = await getDocs(snapshot);
+            const pantryRef = collection(firestore, 'Pantry');
+            const userRef = doc(pantryRef, user?.id);
+            const getUserPantry = collection(userRef, 'Items');
+            const items = await getDocs(getUserPantry);
+
             const pantryList = [];
-            docs.forEach((doc) => {
+            items.forEach((item) => {
                 pantryList.push({
-                    name: doc.id,
-                    ...doc.data(),
+                    name: item.id,
+                    ...item.data(),
                 });
             });
             setPantry(pantryList);
@@ -111,7 +115,34 @@ export default function Page() {
         } catch (error) {
             console.error("Error fetching pantry data: ", error.message);
         }
-    }, [isSignedIn]);
+    }
+
+    useEffect(() => {
+        if(isSignedIn){
+            createUser();
+            updateInventory();
+        }
+    }, [isSignedIn, user]);
+
+
+
+    // const updateInventory = useCallback(async () => {
+    //     try{
+    //         const snapshot = query(collection(firestore, 'pantry'));
+    //         const docs = await getDocs(snapshot);
+    //         const pantryList = [];
+    //         docs.forEach((doc) => {
+    //             pantryList.push({
+    //                 name: doc.id,
+    //                 ...doc.data(),
+    //             });
+    //         });
+    //         setPantry(pantryList);
+
+    //     } catch (error) {
+    //         console.error("Error fetching pantry data: ", error.message);
+    //     }
+    // }, [isSignedIn]);
 
     
     
@@ -151,43 +182,52 @@ export default function Page() {
     
     
     const addItem = async (item) => {
-        const docRef = doc(collection(firestore, 'pantry'), item);
-        const docSnap = await getDoc(docRef);
+        // const docRef = doc(collection(firestore, 'pantry'), item);
+        const pantryRef = collection(firestore, 'Pantry');
+        const userRef = doc(pantryRef, user?.id);
+        const itemsRef = collection(userRef, 'Items');
+        const itemRef = doc(itemsRef, item); 
+        const itemSnap = await getDoc(itemRef);
         
         
-        if( docSnap.exists() ){
-            const {quantity, category} = docSnap.data();
+        if( itemSnap.exists() ){
+            const {quantity, category} = itemSnap.data();
             const newData = {
                 quantity: quantity + 1,
                 category: category,
             }
-            await setDoc(docRef, newData);
+            await setDoc(itemRef, newData);
         } else {
             if(!(isNaN(itemQuantity)) && itemQuantity !== ''){
                 console.log("passed as a number");
-                await setDoc(docRef, {
+                await setDoc(itemRef, {
                     quantity: parseInt(itemQuantity),
                     category: itemCategory,
                 });
+
             } else {
                 console.log("itemQuantity not number")
             }
         }
+        setItemQuantity(0);
         
-        // await updateInventory();
+        await updateInventory();
     }
     
     const removeItem = async (item) => {
-        const docRef = doc(collection(firestore, 'pantry'), item);
-        const docSnap = await getDoc(docRef);
+        const pantryRef = collection(firestore, 'Pantry');
+        const userRef = doc(pantryRef, user?.id);
+        const itemsRef = collection(userRef, 'Items');
+        const itemRef = doc(itemsRef, item); 
+        const itemSnap = await getDoc(itemRef);
         
         
-        if( docSnap.exists() ){
-            const {quantity, category} = docSnap.data();
+        if( itemSnap.exists() ){
+            const {quantity, category} = itemSnap.data();
             if (quantity === 1) {
-                await deleteDoc(docRef);
+                await deleteDoc(itemRef);
             } else {
-                await setDoc(docRef, {
+                await setDoc(itemRef, {
                     quantity: quantity - 1,
                     category: category,
                 });
@@ -266,8 +306,7 @@ export default function Page() {
                 newCategoryListSet.add(pantryItem.category);
             }
         })
-        
-        
+    
         const newCategoryList = Array.from(newCategoryListSet);
         // for(const item in newCategoryListSet.keys()){
             //     console.log('for loop: ' + item);
@@ -276,7 +315,7 @@ export default function Page() {
             // console.log();
             
             setCategoryList(newCategoryList);
-        },[pantry])
+    },[pantry])
         
 
         // if (loading) {
