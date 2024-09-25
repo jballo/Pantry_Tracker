@@ -23,6 +23,7 @@ import TableRow from '@mui/material/TableRow';
 
 import { useUser, useClerk, SignOutButton, SignedIn } from "@clerk/nextjs";
 import Header from "@/app/components/Header"
+import AddItemButton from '../components/AddItemButton';
 
 const ranchers = Ranchers({
   weight: '400',
@@ -34,12 +35,13 @@ export default function Page() {
   const { isSignedIn, user } = useUser();
 
   const [pantry, setPantry] = useState([]);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [filterModelOpen, setFilterModelOpen] = useState(false);
-  const [sortByModalOpen, setSortByModalOpen] = useState(false);
+
   const [itemName, setItemName] = useState('');
   const [itemCategory, setItemCategory] = useState('');
   const [itemQuantity, setItemQuantity] = useState(0);
+
+  const [filterModelOpen, setFilterModelOpen] = useState(false);
+  const [sortByModalOpen, setSortByModalOpen] = useState(false);
   const [minMaxQuantity, setMinMaxQuantity] = useState([0, 100]);
   const [minMaxCalories, setMinMaxCalories] = useState([0, 1000]);
 
@@ -139,6 +141,8 @@ export default function Page() {
   ];
 
 
+
+
   const addItem = async (item) => {
     // const docRef = doc(collection(firestore, 'pantry'), item);
     const pantryRef = collection(firestore, 'Pantry');
@@ -195,8 +199,6 @@ export default function Page() {
     await updateInventory();
   }
 
-  const handleOpen = () => setModalOpen(true);
-  const handleClose = () => setModalOpen(false);
 
   const filterHandleOpen = () => setFilterModelOpen(true);
   const filterHandleClose = () => setFilterModelOpen(false);
@@ -298,102 +300,7 @@ export default function Page() {
         width='100%'
         height='30%'
       >
-        <Modal
-          open={modalOpen}
-          onClose={handleClose}
-        >
-          <Box
-            position={"absolute"}
-            top="50%"
-            left="50%"
-            width={400}
-            bgcolor={"#E3E2DF"}
-            border={"2px solid black"}
-            sx={{
-              transform: 'translate(-50%, -50%)',
-            }}
-            boxShadow={24}
-            p={4}
-            display={"flex"}
-            flexDirection={"column"}
-            gap={3}
-            borderRadius={5}
-          >
-            <Typography
-              variant='h5'
-            >Add Item</Typography>
-            <Stack
-              width={"100%"}
-              direction={"column"}
-              spacing={2}
-            >
-              <Typography>
-                Name:
-              </Typography>
-              <TextField
-                variant="outlined"
-                fullWidth
-                value={itemName}
-                onChange={(e) => {
-                  setItemName(e.target.value);
-                }}
-              />
-              <Typography>
-                Category:
-              </Typography>
-              <TextField
-                variant='outlined'
-                fullWidth
-                value={itemCategory}
-                onChange={(e) => {
-                  setItemCategory(e.target.value);
-                }}
-              />
-
-              <Typography>
-                Quantity:
-              </Typography>
-              <TextField
-                type="number"
-                variant='outlined'
-                fullWidth
-                value={itemQuantity}
-                onChange={(e) => {
-                  setItemQuantity(e.target.value);
-                }}
-              />
-              <Button
-                variant="contained"
-                sx={{
-                  background: '#5D001E',
-                  '&:hover': {
-                    backgroundColor: '#9A1750'
-                  }
-                }}
-                onClick={() => {
-                  addItem(itemName);
-                  setItemName('');
-                  handleClose();
-                }}
-              >Add</Button>
-            </Stack>
-          </Box>
-        </Modal>
-        <Button
-          variant='contained'
-          sx={{
-            height: '50px',
-            background: '#5D001E',
-            '&:hover': {
-              backgroundColor: '#9A1750'
-            }
-          }}
-          onClick={() => {
-            handleOpen();
-          }}
-        >
-          <Typography>Add Item</Typography>
-        </Button>
+        <AddItemButton itemName={itemName} setItemName={setItemName} itemCategory={itemCategory} setItemCategory={setItemCategory} itemQuantity={itemQuantity} setItemQuantity={setItemQuantity} addItem={addItem} />
         <Box
           display='flex'
           flexDirection='row'
@@ -418,42 +325,6 @@ export default function Page() {
               borderRadius={5}
             >
               <Typography>Sort By Coming Soon...</Typography>
-              {/* <FormControl>
-                                    <FormLabel id="demo-radio-buttons-group-label" >Sort By</FormLabel>
-                                <RadioGroup
-                                    aria-labelledby="demo-radio-buttons-group-label"
-                                    defaultValue="female"
-                                    name="radio-buttons-group"
-                                >
-                                    <Stack
-                                        direction='row'                            
-                                    >
-                                        <Stack
-                                            direction='column'
-                                        >
-                                            <FormControlLabel value='nameAsc' control={ <Radio
-                                                onChange={() => {
-                                                    console.log('radio pressed');
-                                                    // setNameOrder();
-                                                }}
-                                            />} label='Name Asc'/>
-                                            <FormControlLabel value='catAsc' control={ <Radio/>} label='Category Asc'/>
-                                            <FormControlLabel value='quantAsc' control={ <Radio/>} label='Quantity Asc'/>
-
-                                        </Stack>
-                                        <Stack
-                                            direction='column'
-                                        >
-                                            <FormControlLabel value='nameDesc' control={ <Radio/>} label='Name Desc'/>
-                                            <FormControlLabel value='catDesc' control={ <Radio/>} label='Category Desc'/>
-                                            <FormControlLabel value='quantDesc' control={ <Radio/>} label='Quantity Desc'/>
-                                            
-                                        </Stack>
-                                    </Stack>
-                                </RadioGroup>
-
-                                </FormControl> */}
-
             </Box>
 
           </Modal>
