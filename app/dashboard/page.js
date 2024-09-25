@@ -24,6 +24,7 @@ import TableRow from '@mui/material/TableRow';
 import { useUser, useClerk, SignOutButton, SignedIn } from "@clerk/nextjs";
 import Header from "@/app/components/Header"
 import AddItemButton from '../components/AddItemButton';
+import SortByButton from '../components/SortByButton';
 
 const ranchers = Ranchers({
   weight: '400',
@@ -41,7 +42,6 @@ export default function Page() {
   const [itemQuantity, setItemQuantity] = useState(0);
 
   const [filterModelOpen, setFilterModelOpen] = useState(false);
-  const [sortByModalOpen, setSortByModalOpen] = useState(false);
   const [minMaxQuantity, setMinMaxQuantity] = useState([0, 100]);
   const [minMaxCalories, setMinMaxCalories] = useState([0, 1000]);
 
@@ -203,8 +203,6 @@ export default function Page() {
   const filterHandleOpen = () => setFilterModelOpen(true);
   const filterHandleClose = () => setFilterModelOpen(false);
 
-  const handleSortByHandleOpen = () => setSortByModalOpen(true);
-  const handleSortByHandleClose = () => setSortByModalOpen(false);
 
   const handleQuantityChange = (event, newValue) => setMinMaxQuantity(newValue);
   const handleCaloriesChange = (event, newValue) => setMinMaxCalories(newValue);
@@ -306,44 +304,7 @@ export default function Page() {
           flexDirection='row'
           gap={3}
         >
-          <Modal
-            open={sortByModalOpen}
-            onClose={handleSortByHandleClose}
-          >
-            <Box
-              position={"absolute"}
-              top="50%" r
-              left="50%"
-              width={400}
-              bgcolor={"#E3E2DF"}
-              border={"2px solid black"}
-              sx={{
-                transform: 'translate(-50%, -50%)',
-              }}
-              boxShadow={24}
-              padding={3}
-              borderRadius={5}
-            >
-              <Typography>Sort By Coming Soon...</Typography>
-            </Box>
-
-          </Modal>
-
-          <Button
-            variant='contained'
-            sx={{
-              height: '50px',
-              background: '#5D001E',
-              '&:hover': {
-                backgroundColor: '#9A1750'
-              }
-            }}
-            onClick={() => {
-              handleSortByHandleOpen();
-            }}
-          >
-            <Typography>Sort By</Typography>
-          </Button>
+          <SortByButton />
           <Modal
             open={filterModelOpen}
             onClose={filterHandleClose}
