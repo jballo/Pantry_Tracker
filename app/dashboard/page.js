@@ -25,6 +25,7 @@ import { useUser, useClerk, SignOutButton, SignedIn } from "@clerk/nextjs";
 import Header from "@/app/components/Header"
 import AddItemButton from '../components/AddItemButton';
 import SortByButton from '../components/SortByButton';
+import FilterByButton from '../components/FilterByButton';
 
 const ranchers = Ranchers({
   weight: '400',
@@ -41,15 +42,13 @@ export default function Page() {
   const [itemCategory, setItemCategory] = useState('');
   const [itemQuantity, setItemQuantity] = useState(0);
 
-  const [filterModelOpen, setFilterModelOpen] = useState(false);
   const [minMaxQuantity, setMinMaxQuantity] = useState([0, 100]);
-  const [minMaxCalories, setMinMaxCalories] = useState([0, 1000]);
+  const [categoryList, setCategoryList] = useState([]);
+  const [itemSearchName, setItemSearchName] = useState('');
 
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const [categoryList, setCategoryList] = useState([]);
-  const [itemSearchName, setItemSearchName] = useState('');
 
 
   const [categoryListFilters, setCategoryListFilters] = useState([]);
@@ -205,7 +204,6 @@ export default function Page() {
 
 
   const handleQuantityChange = (event, newValue) => setMinMaxQuantity(newValue);
-  const handleCaloriesChange = (event, newValue) => setMinMaxCalories(newValue);
 
   const setNameOrder = () => {
     const newPantryAsc = pantry.sort((a, b) => a.name.localeCompare(b.name));
@@ -304,82 +302,7 @@ export default function Page() {
           flexDirection='row'
           gap={3}
         >
-          <SortByButton />
-          <Modal
-            open={filterModelOpen}
-            onClose={filterHandleClose}
-          >
-            <Box
-              position={"absolute"}
-              top="50%"
-              left="50%"
-              width={400}
-              bgcolor={"#E3E2DF"}
-              border={"2px solid black"}
-              sx={{
-                transform: 'translate(-50%, -50%)',
-              }}
-              boxShadow={24}
-              padding={5}
-              display='flex'
-              flexDirection='column'
-              gap={1}
-              borderRadius={5}
-            >
-              <Typography>Select Category</Typography>
-              {
-                categoryList.map((categoryName) => {
-                  return <FormControlLabel
-                    key={categoryName}
-                    control={
-                      <Checkbox
-                        checked={categoryListFilters.includes(categoryName)}
-                        onChange={() => {
-                          console.log("checkbox pressed")
-                          handleCategoryFilterChange(categoryName);
-                        }}
-                        sx={{
-                          color: '#9A1750',
-                          '&.Mui-checked': {
-                            color: '#9A1750',
-                          },
-                        }}
-                      />
-                    }
-                    label={categoryName}
-                    onChange={() => {
-                      console.log("Form control label")
-                    }}
-                  >
-                  </FormControlLabel>
-                })
-              }
-              <Typography>Quantity Range</Typography>
-              <Slider
-                value={minMaxQuantity}
-                valueLabelDisplay="on"
-                onChange={handleQuantityChange}
-                color='#5D001E'
-              />
-            </Box>
-          </Modal>
-
-          <Button
-            variant='contained'
-            sx={{
-              height: '50px',
-              background: '#5D001E',
-              '&:hover': {
-                backgroundColor: '#9A1750'
-              }
-            }}
-            onClick={() => {
-              filterHandleOpen();
-            }}
-          >
-            <Typography>Filter By</Typography>
-          </Button>
-
+          <FilterByButton minMaxQuantity={minMaxQuantity} handleQuantityChange={handleQuantityChange} categoryList={categoryList} categoryListFilters={categoryListFilters} handleCategoryFilterChange={handleCategoryFilterChange} />
           <TextField
             id='searchFieldTextField'
             variant='standard'
