@@ -26,6 +26,7 @@ import Header from "@/app/components/Header"
 import AddItemButton from '../components/AddItemButton';
 import SortByButton from '../components/SortByButton';
 import FilterByButton from '../components/FilterByButton';
+import SearchField from '../components/SearchField';
 
 const ranchers = Ranchers({
   weight: '400',
@@ -303,45 +304,7 @@ export default function Page() {
           gap={3}
         >
           <FilterByButton minMaxQuantity={minMaxQuantity} handleQuantityChange={handleQuantityChange} categoryList={categoryList} categoryListFilters={categoryListFilters} handleCategoryFilterChange={handleCategoryFilterChange} />
-          <TextField
-            id='searchFieldTextField'
-            variant='standard'
-            sx={{
-              height: '10px'
-            }}
-            label='Search by Name...'
-            onChange={(e) => {
-              setItemSearchName(e.target.value);
-            }}
-          />
-          <Box
-            display='flex'
-            sx={{
-
-              justifyContent: 'center'
-            }}
-            alignItems='start'
-            padding={2}
-          >
-            <SearchIcon
-              // color='#5D001E'
-              sx={{
-                color: '#5D001E',
-
-                justifyContent: 'center'
-              }}
-
-            />
-
-          </Box>
-          <IconButton
-
-            sx={{
-              width: '10px',
-              height: '10px'
-            }}
-          >
-          </IconButton>
+          <SearchField setItemSearchName={setItemSearchName} />
 
         </Box>
       </Stack>
