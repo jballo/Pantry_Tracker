@@ -1,9 +1,12 @@
 'use client';
 import { Modal, Box, Typography, Stack, TextField, Button } from "@mui/material";
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Camera } from "react-camera-pro";
 
 export default function AddItemButton({ itemName, setItemName, itemCategory, setItemCategory, itemQuantity, setItemQuantity, addItem }) {
   const [modalOpen, setModalOpen] = useState(false);
+  const camera = useRef(null);
+  const [image, setImage] = useState(null);
 
   const handleClose = () => setModalOpen(false);
 
@@ -92,6 +95,27 @@ export default function AddItemButton({ itemName, setItemName, itemCategory, set
                 handleClose();
               }}
             >Add</Button>
+            <Box
+              width='300px'
+              height='200px'
+            >
+              <Camera ref={camera} aspectRatio={16 / 9} />
+              {/*<img src={image} width='300px' alt='Taken photo' />*/}
+              <Button
+                variant="contained"
+                sx={{
+                  background: '#5D001E',
+                  '&:hover': {
+                    backgroundColor: '#9A1750'
+                  }
+                }}
+                onClick={() => {
+                  setImage(camera.current.takePhoto());
+                  console.log("Photo taken.");
+                }}
+              >Take Photo</Button>
+
+            </Box>
           </Stack>
         </Box>
       </Modal>
