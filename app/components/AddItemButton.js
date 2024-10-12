@@ -12,6 +12,35 @@ export default function AddItemButton({ itemName, setItemName, itemCategory, set
 
   const handleOpen = () => setModalOpen(true);
 
+  const predictItem = async (photo) => {
+
+    if (!photo) {
+      console.error("Image is null.");
+      return null;
+    }
+
+    try {
+      const response = await fetch("/api/predict", {
+        method: "POST",
+        "Content-Type": "application/json",
+        body: JSON.stringify({ image: photo })
+      })
+
+      if (!response.ok) {
+        console.error("Failed to predict item.");
+        return null;
+      }
+
+      const data = await response.json();
+      console.log("Prediction result:", data);
+      // return data;
+      setItemName(data.message);
+
+    } catch (error) {
+      console.error("Error predicting item:", error);
+      return null;
+    }
+  };
 
 
   return (
@@ -110,7 +139,10 @@ export default function AddItemButton({ itemName, setItemName, itemCategory, set
                   }
                 }}
                 onClick={() => {
-                  setImage(camera.current.takePhoto());
+                  const photo = camera.current.takePhoto();
+                  setImage(photo);
+                  console.log("Image set.");
+                  predictItem(photo);
                   console.log("Photo taken.");
                 }}
               >Take Photo</Button>
