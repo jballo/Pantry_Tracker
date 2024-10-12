@@ -16,7 +16,7 @@ export async function POST(req) {
             {
                 role: "user", 
                 content: [
-                    {type: "text", text: "What's in this image?"},
+                    {type: "text", text: "What specific food item is in this photo? Only list type of item (ex. Ice cream, Cereal, etc.)"},
                     {
                         type: "image_url",
                         image_url: {
@@ -31,5 +31,8 @@ export async function POST(req) {
 
     console.log(completion.choices[0]);
 
-    return NextResponse.json({ message: "Image received" }, { status: 200 });
+    const item = completion.choices[0].message.content;
+    console.log("Item: ", item);
+
+    return NextResponse.json({ message: item }, { status: 200 });
 }

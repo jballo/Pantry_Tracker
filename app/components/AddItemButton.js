@@ -34,6 +34,7 @@ export default function AddItemButton({ itemName, setItemName, itemCategory, set
       const data = await response.json();
       console.log("Prediction result:", data);
       // return data;
+      setItemName(data.message);
 
     } catch (error) {
       console.error("Error predicting item:", error);
