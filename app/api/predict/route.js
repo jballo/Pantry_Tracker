@@ -6,17 +6,27 @@ const openai = new OpenAI()
 
 export async function POST(req) {
     const { image } = await req.json();
-    console.log("Received image:", image);
+    // console.log("Received image:", image);
 
     const base64Image = image.replace("data:image/jpeg;base64,", "");
     // console.log("\n\nBase64 image:", base64Image);
+
+    const promptText = `
+        Identify the food item and its category from this image. 
+        Respond in JSON format with two keys: 'item' for the exact name of the food, and 'category' for its general type. 
+        For example:
+        {
+            "item": "Juicy Juice 100% Apple Juice",
+            "category": "Beverage"
+        }
+    `;
 
     const completion = await openai.chat.completions.create({
         messages: [
             {
                 role: "user", 
                 content: [
-                    {type: "text", text: "What specific food item is in this photo? Only list type of item (ex. Ice cream, Cereal, etc.)"},
+                    {type: "text", text: promptText},
                     {
                         type: "image_url",
                         image_url: {
@@ -29,10 +39,14 @@ export async function POST(req) {
         model: "gpt-4o-mini",
     });
 
-    console.log(completion.choices[0]);
+    // console.log(completion.choices[0]);
 
     const item = completion.choices[0].message.content;
-    console.log("Item: ", item);
-
-    return NextResponse.json({ message: item }, { status: 200 });
+    // console.log("Item: ", item);
+    const response = completion.choices[0].message.content;
+    // Step 1: Remove the Markdown backticks and 'json' label
+    const cleanedResponse = response.replace(/```json|```/g, '').trim();
+    const parsedResponse = JSON.parse(cleanedResponse);
+    console.log("Parsed JSON:", parsedResponse);
+    return NextResponse.json({ message: parsedResponse }, { status: 200 });
 }
