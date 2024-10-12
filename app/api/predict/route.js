@@ -1,27 +1,27 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
+import { z } from "zod";
+import { zodResponseFormat } from "openai/helpers/zod";
 
 const openai = new OpenAI()
 
+const ItemResponse = z.object({
+    itemName: z.string(),
+    category: z.string(),
+});
+
 
 export async function POST(req) {
+    // Step 1: Extract the base64 string from the request body
     const { image } = await req.json();
-    // console.log("Received image:", image);
 
-    // const base64Image = image.replace("data:image/jpeg;base64,", "");
-    // console.log("\n\nBase64 image:", base64Image);
     const promptText = `
-        Identify the food item and its category from this image. 
-        Respond in JSON format with two keys: 'item' for the exact name of the food, and 'category' for its general type. 
-        For example:
-        {
-            "item": "Juicy Juice 100% Apple Juice",
-            "category": "Beverage"
-        }
+        Identify the food item name, for the exact name of the food, and its category for the general type, from this image. 
     `;
     try {
-    
-        const completion = await openai.chat.completions.create({
+        // Step 2: Send a prompt to the OpenAI API to get a response with the item name and category based on the image
+        const response = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "user", 
@@ -36,21 +36,18 @@ export async function POST(req) {
                     ],
                 },
             ],
-            model: "gpt-4o-mini",
+            response_format: zodResponseFormat(ItemResponse, "item_response"),
         });
-    
-        // console.log(completion.choices[0]);
-    
-        const item = completion.choices[0].message.content;
-        // console.log("Item: ", item);
-        const response = completion.choices[0].message.content;
-        // Step 1: Remove the Markdown backticks and 'json' label
-        const cleanedResponse = response.replace(/```json|```/g, '').trim();
-        // Step 2: Convert string into JSON
-        const parsedResponse = JSON.parse(cleanedResponse);
-        console.log("Parsed JSON:", parsedResponse);
-        // Step 3: Return the object
-        return NextResponse.json({ message: parsedResponse }, { status: 200 });
+        
+        // Step 3: Extract the predicted item name and category from the API's response
+        const itemInfo = response.choices[0].message.content;
+        // Step 4: Convert string to Json Object
+        console.log(itemInfo);
+        const parsedItemInfo = JSON.parse(itemInfo);
+        console.log("Item info: ", parsedItemInfo);
+
+        // Step 5: Return the parsed item information as a JSON response
+        return NextResponse.json({ message: parsedItemInfo }, { status: 200 });
 
     } catch (error) {
         console.error("Prediction failed for item.")
