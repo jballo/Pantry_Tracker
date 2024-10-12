@@ -7,7 +7,7 @@ import { Ranchers } from "next/font/google";
 
 import { useRouter } from 'next/navigation';
 import { SignedIn, useUser } from "@clerk/nextjs";
-import { SignIn, SignInButton, SignedOut, SignOutButton, SignUpButton } from "@clerk/clerk-react";
+import { SignIn, SignInButton, SignedOut, SignOutButton, SignUpButton } from "@clerk/nextjs";
 
 
 const ranchers = Ranchers({
