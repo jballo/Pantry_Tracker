@@ -49,7 +49,7 @@ export default function Header() {
         }}
         color="#9A1750"
       >
-        Welcome, {user?.firstName} !
+        Welcome, {user?.firstName} 😄
       </Typography>
       <Button
         aria-controls={open ? "positioned-menu" : undefined}
